@@ -190,14 +190,14 @@ class Manage:
 
     @cherrypy.expose
     def backlogShow(self, tvdb_id):
-        
+
         show_obj = helpers.findCertainShow(sickbeard.showList, int(tvdb_id))
-        
+
         if show_obj:
             sickbeard.backlogSearchScheduler.action.searchBacklog([show_obj])
-        
+
         redirect("/manage/backlogOverview")
-        
+
     @cherrypy.expose
     def backlogOverview(self):
 
@@ -458,7 +458,7 @@ class ConfigGeneral:
         t.submenu = ConfigMenu
         return _munge(t)
 
-    
+
     @cherrypy.expose
     def saveGeneral(self, log_dir=None, web_port=None, web_log=None, web_ipv6=None,
                     launch_browser=None, web_username=None,
@@ -542,7 +542,7 @@ class ConfigGeneral:
         sickbeard.metadata_provider_dict['XBMC'].set_config(xbmc_data)
         sickbeard.metadata_provider_dict['MediaBrowser'].set_config(mediabrowser_data)
         sickbeard.metadata_provider_dict['Sony PS3'].set_config(sony_ps3_data)
-        
+
         sickbeard.SEASON_FOLDERS_FORMAT = season_folders_format
         sickbeard.SEASON_FOLDERS_DEFAULT = int(season_folders_default)
         sickbeard.QUALITY_DEFAULT = newQuality
@@ -886,6 +886,8 @@ class ConfigProviders:
                 sickbeard.WOMBLE = curEnabled
             elif curProvider == 'ezrss':
                 sickbeard.EZRSS = curEnabled
+            elif curProvider == 'isohunt':
+                sickbeard.ISOHUNT = curEnabled
             elif curProvider in newznabProviderDict:
                 newznabProviderDict[curProvider].enabled = bool(curEnabled)
             else:
@@ -935,7 +937,7 @@ class ConfigNotifications:
     @cherrypy.expose
     def saveNotifications(self, use_xbmc=None, xbmc_notify_onsnatch=None, xbmc_notify_ondownload=None,
                           xbmc_update_library=None, xbmc_update_full=None, xbmc_host=None, xbmc_username=None, xbmc_password=None,
-                          use_growl=None, growl_notify_onsnatch=None, growl_notify_ondownload=None, growl_host=None, growl_password=None, 
+                          use_growl=None, growl_notify_onsnatch=None, growl_notify_ondownload=None, growl_host=None, growl_password=None,
                           use_twitter=None, twitter_notify_onsnatch=None, twitter_notify_ondownload=None):
 
         results = []
@@ -964,7 +966,7 @@ class ConfigNotifications:
             use_xbmc = 1
         else:
             use_xbmc = 0
-            
+
         if growl_notify_onsnatch == "on":
             growl_notify_onsnatch = 1
         else:
@@ -1708,7 +1710,7 @@ class Home:
                         ep_segment = str(epObj.airdate)[:7]
                     else:
                         ep_segment = epObj.season
-    
+
                     if ep_segment not in segment_list:
                         segment_list.append(ep_segment)
 
@@ -1807,7 +1809,7 @@ class WebInterface:
             return cherrypy.lib.static.serve_file(default_image_path, content_type="image/jpeg")
 
         cache_obj = image_cache.ImageCache()
-        
+
         if which == 'poster':
             image_file_name = cache_obj.poster_path(showObj.tvdbid)
         # this is for 'banner' but also the default case
@@ -1841,32 +1843,32 @@ class WebInterface:
     def setComingEpsLayout(self, layout):
         if layout not in ('poster', 'banner', 'list'):
             layout = 'banner'
-        
+
         sickbeard.COMING_EPS_LAYOUT = layout
-        
+
         redirect("/comingEpisodes")
 
     @cherrypy.expose
     def toggleComingEpsDisplayPaused(self):
-        
+
         sickbeard.COMING_EPS_DISPLAY_PAUSED = not sickbeard.COMING_EPS_DISPLAY_PAUSED
-        
+
         redirect("/comingEpisodes")
 
     @cherrypy.expose
     def setComingEpsSort(self, sort):
         if sort not in ('date', 'network', 'show'):
             sort = 'date'
-        
+
         sickbeard.COMING_EPS_SORT = sort
-        
+
         redirect("/comingEpisodes")
 
     @cherrypy.expose
     def comingEpisodes(self):
 
         myDB = db.DBConnection()
-        
+
         today = datetime.date.today().toordinal()
         next_week = (datetime.date.today() + datetime.timedelta(days=7)).toordinal()
         recently = (datetime.date.today() - datetime.timedelta(days=3)).toordinal()
@@ -1902,7 +1904,7 @@ class WebInterface:
                                             'Show': 'setComingEpsSort/?sort=show',
                                             'Network': 'setComingEpsSort/?sort=network',
                                            }},
-                                           
+
             { 'title': 'Layout:', 'path': {'Banner': 'setComingEpsLayout/?layout=banner',
                                            'Poster': 'setComingEpsLayout/?layout=poster',
                                            'List': 'setComingEpsLayout/?layout=list',

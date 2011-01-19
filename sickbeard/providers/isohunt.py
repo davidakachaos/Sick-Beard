@@ -17,12 +17,12 @@ class ISOHUNTProvider(generic.TorrentProvider):
 
         self.supportsBacklog = True
 
-        self.cache = EZRSSCache(self)
+        self.cache = ISOHUNTCache(self)
 
         self.url = 'http://isohunt.com/js/rss/'
 
     def isEnabled(self):
-        return sickbeard.EZRSS
+        return sickbeard.ISOHUNT
 
     def imageName(self):
         return 'isohunt.gif'
@@ -81,8 +81,8 @@ class ISOHUNTProvider(generic.TorrentProvider):
         if search_params:
             params.update(search_params)
 
-        searchURL = self.url + urllib.urlencode(params) + '?iht=3'
-
+        #searchURL = self.url + urllib.urlencode(params['show_name']) + '?iht=3'
+        searchURL = self.url + '?iht=3'
         logger.log(u"Search string: " + searchURL, logger.DEBUG)
 
         data = self.getURL(searchURL)
@@ -114,12 +114,12 @@ class ISOHUNTProvider(generic.TorrentProvider):
 
     def _get_title_and_url(self, item):
         title = item.findtext('title')
-        url = item.findtext('enclosure').replace('&amp;','&')
+        url = item.findtext('enclosure url')
 
-        new_title = self._extract_name_from_url(url)
-        if new_title:
-            title = new_title
-            logger.log(u"Extracted the name "+title+" from the torrent link", logger.DEBUG)
+        #new_title = self._extract_name_from_url(url)
+        #if new_title:
+        #    title = new_title
+        #    logger.log(u"Extracted the name "+title+" from the torrent link", logger.DEBUG)
 
         return (title, url)
 
@@ -145,7 +145,7 @@ class ISOHUNTCache(tvcache.TVCache):
     def _getRSSData(self):
         url = 'http://isohunt.com/js/rss/?iht=3'
 
-        logger.log(u"ISOHUNT cache update URL: "+ url, logger.DEBUG)
+        logger.log(u"ISOHUNT cache update URL: " + url, logger.DEBUG)
 
         data = self.provider.getURL(url)
 
@@ -154,12 +154,12 @@ class ISOHUNTCache(tvcache.TVCache):
     def _parseItem(self, item):
 
         title = item.findtext('title')
-        url = item.findtext('link')
+        url = item.findtext('enclosure')
 
-        new_title = self.provider._extract_name_from_url(url)
-        if new_title:
-            title = new_title
-            logger.log(u"Extracted the name "+title+" from the torrent link", logger.DEBUG)
+        #new_title = self.provider._extract_name_from_url(url)
+        #if new_title:
+        #    title = new_title
+        #    logger.log(u"Extracted the name "+title+" from the torrent link", logger.DEBUG)
 
         if not title or not url:
             logger.log(u"The XML returned from the ISOHUNT RSS feed is incomplete, this result is unusable", logger.ERROR)

@@ -1,4 +1,5 @@
 __all__ = ['ezrss',
+           'isohunt',
            'nzbmatrix',
            'nzbs_org',
            'tvbinz',

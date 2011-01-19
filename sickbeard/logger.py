@@ -16,7 +16,7 @@
 # You should have received a copy of the GNU General Public License
 # along with Sick Beard.  If not, see <http://www.gnu.org/licenses/>.
 
-from __future__ import with_statement 
+from __future__ import with_statement
 
 import os.path
 import threading
@@ -63,7 +63,7 @@ def initLogging(consoleLogging=True):
     if consoleLogging:
         console = logging.StreamHandler()
 
-        console.setLevel(logging.INFO)
+        console.setLevel(logging.DEBUG)
 
         # set a format which is simpler for console use
         console.setFormatter(logging.Formatter('%(asctime)s %(levelname)s::%(message)s', '%H:%M:%S'))
@@ -79,9 +79,9 @@ def log(toLog, logLevel=MESSAGE):
 
         meThread = threading.currentThread().getName()
         message = meThread + u" :: " + toLog
-    
+
         outLine = message.encode('utf-8')
-    
+
         sbLogger = logging.getLogger('sickbeard')
 
         try:
@@ -93,7 +93,7 @@ def log(toLog, logLevel=MESSAGE):
                 sbLogger.warning(outLine)
             elif logLevel == ERROR:
                 sbLogger.error(outLine)
-        
+
                 # add errors to the UI logger
                 classes.ErrorViewer.add(classes.UIError(message))
             else:

@@ -127,7 +127,8 @@ MIN_SEARCH_FREQUENCY = 10
 
 DEFAULT_SEARCH_FREQUENCY = 60
 
-EZRSS = False
+EZRSS = True
+ISOHUNT = True
 TORRENT_DIR = None
 
 RENAME_EPISODES = False
@@ -293,7 +294,7 @@ def initialize(consoleLogging=True):
                 XBMC_NOTIFY_ONSNATCH, XBMC_NOTIFY_ONDOWNLOAD, XBMC_UPDATE_FULL, \
                 XBMC_UPDATE_LIBRARY, XBMC_HOST, XBMC_USERNAME, XBMC_PASSWORD, currentSearchScheduler, backlogSearchScheduler, \
                 showUpdateScheduler, __INITIALIZED__, LAUNCH_BROWSER, showList, loadingShowList, \
-                NZBS, NZBS_UID, NZBS_HASH, EZRSS, TORRENT_DIR, USENET_RETENTION, SOCKET_TIMEOUT, \
+                NZBS, NZBS_UID, NZBS_HASH, EZRSS, ISOHUNT, TORRENT_DIR, USENET_RETENTION, SOCKET_TIMEOUT, \
                 SEARCH_FREQUENCY, DEFAULT_SEARCH_FREQUENCY, BACKLOG_SEARCH_FREQUENCY, \
                 QUALITY_DEFAULT, SEASON_FOLDERS_FORMAT, SEASON_FOLDERS_DEFAULT, \
                 USE_XBMC, GROWL_NOTIFY_ONSNATCH, GROWL_NOTIFY_ONDOWNLOAD, TWITTER_NOTIFY_ONSNATCH, TWITTER_NOTIFY_ONDOWNLOAD, \
@@ -403,6 +404,10 @@ def initialize(consoleLogging=True):
         if not EZRSS:
             EZRSS = bool(check_setting_int(CFG, 'EZRSS', 'ezrss', 0))
 
+        ISOHUNT = bool(check_setting_int(CFG, 'General', 'use_torrent', 0))
+        if not ISOHUNT:
+            ISOHUNT = bool(check_setting_int(CFG, 'EZRSS', 'ezrss', 0))
+
         TVBINZ = bool(check_setting_int(CFG, 'TVBinz', 'tvbinz', 0))
         TVBINZ_UID = check_setting_str(CFG, 'TVBinz', 'tvbinz_uid', '')
         TVBINZ_HASH = check_setting_str(CFG, 'TVBinz', 'tvbinz_hash', '')
@@ -434,7 +439,7 @@ def initialize(consoleLogging=True):
         SAB_CATEGORY = check_setting_str(CFG, 'SABnzbd', 'sab_category', 'tv')
         SAB_HOST = check_setting_str(CFG, 'SABnzbd', 'sab_host', '')
 
-        USE_XBMC = bool(check_setting_int(CFG, 'XBMC', 'use_xbmc', 0)) 
+        USE_XBMC = bool(check_setting_int(CFG, 'XBMC', 'use_xbmc', 0))
         XBMC_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'XBMC', 'xbmc_notify_onsnatch', 0))
         XBMC_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'XBMC', 'xbmc_notify_ondownload', 0))
         XBMC_UPDATE_LIBRARY = bool(check_setting_int(CFG, 'XBMC', 'xbmc_update_library', 0))
@@ -451,7 +456,7 @@ def initialize(consoleLogging=True):
 
         USE_TWITTER = bool(check_setting_int(CFG, 'Twitter', 'use_twitter', 0))
         TWITTER_NOTIFY_ONSNATCH = bool(check_setting_int(CFG, 'Twitter', 'twitter_notify_onsnatch', 0))
-        TWITTER_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'Twitter', 'twitter_notify_ondownload', 0))        
+        TWITTER_NOTIFY_ONDOWNLOAD = bool(check_setting_int(CFG, 'Twitter', 'twitter_notify_ondownload', 0))
         TWITTER_USERNAME = check_setting_str(CFG, 'Twitter', 'twitter_username', '')
         TWITTER_PASSWORD = check_setting_str(CFG, 'Twitter', 'twitter_password', '')
         TWITTER_PREFIX = check_setting_str(CFG, 'Twitter', 'twitter_prefix', 'Sick Beard')
@@ -465,7 +470,7 @@ def initialize(consoleLogging=True):
         METADATA_TYPE = check_setting_str(CFG, 'General', 'metadata_type', '')
 
         metadata_provider_dict = metadata.get_metadata_generator_dict()
-        
+
         # if this exists it's legacy, use the info to upgrade metadata to the new settings
         if METADATA_TYPE:
 
@@ -477,12 +482,12 @@ def initialize(consoleLogging=True):
                 old_metadata_class = metadata.mediabrowser.metadata_class
             elif METADATA_TYPE == 'ps3':
                 old_metadata_class = metadata.ps3.metadata_class
-        
+
             if old_metadata_class:
-                
+
                 METADATA_SHOW = bool(check_setting_int(CFG, 'General', 'metadata_show', 1))
                 METADATA_EPISODE = bool(check_setting_int(CFG, 'General', 'metadata_episode', 1))
-            
+
                 ART_POSTER = bool(check_setting_int(CFG, 'General', 'art_poster', 1))
                 ART_FANART = bool(check_setting_int(CFG, 'General', 'art_fanart', 1))
                 ART_THUMBNAILS = bool(check_setting_int(CFG, 'General', 'art_thumbnails', 1))
@@ -494,7 +499,7 @@ def initialize(consoleLogging=True):
                                                         ART_FANART,
                                                         ART_THUMBNAILS,
                                                         ART_SEASON_THUMBNAILS)
-                
+
                 metadata_provider_dict[new_metadata_class.name] = new_metadata_class
 
         # this is the normal codepath for metadata config
@@ -502,7 +507,7 @@ def initialize(consoleLogging=True):
             METADATA_XBMC = check_setting_str(CFG, 'General', 'metadata_xbmc', '0|0|0|0|0|0')
             METADATA_MEDIABROWSER = check_setting_str(CFG, 'General', 'metadata_mediabrowser', '0|0|0|0|0|0')
             METADATA_PS3 = check_setting_str(CFG, 'General', 'metadata_ps3', '0|0|0|0|0|0')
-            
+
             for cur_metadata_tuple in [(METADATA_XBMC, metadata.xbmc),
                                        (METADATA_MEDIABROWSER, metadata.mediabrowser),
                                        (METADATA_PS3, metadata.ps3),
@@ -521,7 +526,7 @@ def initialize(consoleLogging=True):
         newznabProviderList = providers.getNewznabProviderList(newznabData)
 
         providerList = providers.makeProviderList()
-        
+
         logger.initLogging(consoleLogging=consoleLogging)
 
         # initialize the main SB database
@@ -798,7 +803,7 @@ def save_config():
     new_config['General']['move_associated_files'] = int(MOVE_ASSOCIATED_FILES)
     new_config['General']['process_automatically'] = int(PROCESS_AUTOMATICALLY)
     new_config['General']['rename_episodes'] = int(RENAME_EPISODES)
-    
+
     new_config['General']['extra_scripts'] = '|'.join(EXTRA_SCRIPTS)
     new_config['General']['git_path'] = GIT_PATH
 
@@ -808,6 +813,9 @@ def save_config():
 
     new_config['EZRSS'] = {}
     new_config['EZRSS']['ezrss'] = int(EZRSS)
+
+    new_config['ISOHUNT'] = {}
+    new_config['ISOHUNT']['ezrss'] = int(EZRSS)
 
     new_config['TVBinz'] = {}
     new_config['TVBinz']['tvbinz'] = int(TVBINZ)
@@ -849,7 +857,7 @@ def save_config():
     new_config['SABnzbd']['sab_host'] = SAB_HOST
 
     new_config['XBMC'] = {}
-    new_config['XBMC']['use_xbmc'] = int(USE_XBMC)    
+    new_config['XBMC']['use_xbmc'] = int(USE_XBMC)
     new_config['XBMC']['xbmc_notify_onsnatch'] = int(XBMC_NOTIFY_ONSNATCH)
     new_config['XBMC']['xbmc_notify_ondownload'] = int(XBMC_NOTIFY_ONDOWNLOAD)
     new_config['XBMC']['xbmc_update_library'] = int(XBMC_UPDATE_LIBRARY)
@@ -861,7 +869,7 @@ def save_config():
     new_config['Growl'] = {}
     new_config['Growl']['use_growl'] = int(USE_GROWL)
     new_config['Growl']['growl_notify_onsnatch'] = int(GROWL_NOTIFY_ONSNATCH)
-    new_config['Growl']['growl_notify_ondownload'] = int(GROWL_NOTIFY_ONDOWNLOAD) 
+    new_config['Growl']['growl_notify_ondownload'] = int(GROWL_NOTIFY_ONDOWNLOAD)
     new_config['Growl']['growl_host'] = GROWL_HOST
     new_config['Growl']['growl_password'] = GROWL_PASSWORD
 
